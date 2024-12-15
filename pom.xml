@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.demo</groupId>
     <artifactId>email-server-app</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>email-server-app</name>
     <description>email-server-app</description>
     <url/>
