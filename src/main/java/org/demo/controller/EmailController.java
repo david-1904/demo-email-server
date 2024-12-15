@@ -1,6 +1,7 @@
 package org.demo.controller;
 
 import org.demo.entity.Email;
+import org.demo.entity.dto.EmailRequestDto;
 import org.demo.service.EmailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,9 @@ public class EmailController {
     }
 
     @PostMapping
-    public ResponseEntity<Email> createEmail(@RequestBody Email email) {
-        return ResponseEntity.ok(emailService.createEmail(email));
+    public ResponseEntity<String> createEmail(@RequestBody EmailRequestDto emailRequest) {
+        emailService.saveEmail(emailRequest);
+        return ResponseEntity.ok("Email created successfully!");
     }
 
     @PutMapping("/{id}")
