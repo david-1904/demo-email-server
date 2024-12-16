@@ -4,6 +4,6 @@ CREATE TABLE recipient (
                            id SERIAL PRIMARY KEY,
                            email_id INTEGER NOT NULL,
                            email VARCHAR(255) NOT NULL,
-                           type VARCHAR(10) NOT NULL,
+                           recipient_type VARCHAR(10) NOT NULL,
                            FOREIGN KEY (email_id) REFERENCES email(email_id) ON DELETE CASCADE
 );
