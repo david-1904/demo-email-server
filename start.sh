@@ -8,11 +8,11 @@ docker compose down --volumes --remove-orphans
 
 # Start production services
 echo "Starting production environment..."
-docker compose up -d postgres flyway email-server-app
+docker compose up --build -d postgres flyway email-server-app
 
 # Start test services
 echo "Setting up test environment..."
-docker compose up -d postgres_test flyway_test
+docker compose up --build -d postgres_test flyway_test
 
 # Run tests
 echo "Running tests..."
