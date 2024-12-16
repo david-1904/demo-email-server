@@ -2,8 +2,8 @@ package org.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.demo.entity.enums.EmailStatus;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
