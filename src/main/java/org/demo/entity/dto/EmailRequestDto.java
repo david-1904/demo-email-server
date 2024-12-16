@@ -1,8 +1,12 @@
 package org.demo.entity.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import org.demo.entity.enums.EmailStatus;
+import org.demo.entity.enums.RecipientType;
 
 import java.util.List;
 
@@ -15,14 +19,20 @@ public class EmailRequestDto {
     private String emailBody;
 
     @NotNull(message = "Recipients cannot be null")
-    private RecipientsDto recipients;
+    private List<RecipientsDto> emailTo;
+
+    private List<RecipientsDto> emailCC;
+
+    @NotNull(message = "State cannot be null")
+    private EmailStatus state;
 
     @Data
     public static class RecipientsDto {
 
-        @NotEmpty(message = "TO recipients cannot be empty")
-        private List<String> to;
-        private List<String> cc;
+        @NotNull
+        @Email(message = "Recipient email must be valid")
+        private String email;
+
     }
 
 }
