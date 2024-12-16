@@ -2,6 +2,7 @@ package org.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.demo.entity.enums.RecipientType;
 
 @Entity
 @Data
@@ -14,12 +15,12 @@ public class Recipient {
     @Column(nullable = false)
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private RecipientType type;
-
     @ManyToOne
     @JoinColumn(name = "email_id", nullable = false)
     private Email emailReference;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recipient_type", nullable = false)
+    private RecipientType type;
 
 }
