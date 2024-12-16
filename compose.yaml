@@ -33,6 +33,7 @@ services:
     container_name: email_server_app
     ports:
       - "8080:8080"
+      - "5005:5005"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/email_server
       SPRING_DATASOURCE_USERNAME: admin
