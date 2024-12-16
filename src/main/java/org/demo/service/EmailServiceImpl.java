@@ -1,7 +1,6 @@
 package org.demo.service;
 
 import org.demo.entity.Email;
-import org.demo.entity.enums.EmailStatus;
 import org.demo.entity.Recipient;
 import org.demo.entity.enums.RecipientType;
 import org.demo.entity.dto.EmailRequestDto;

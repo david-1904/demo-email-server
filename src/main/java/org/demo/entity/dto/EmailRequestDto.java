@@ -1,12 +1,9 @@
 package org.demo.entity.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
 import org.demo.entity.enums.EmailStatus;
-import org.demo.entity.enums.RecipientType;
 
 import java.util.List;
 
