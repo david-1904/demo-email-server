@@ -1,4 +1,4 @@
-package org.demo.entity;
+package org.demo.entity.enums;
 
 public enum EmailStatus {
     DRAFT,
