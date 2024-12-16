@@ -1,9 +1,9 @@
 package org.demo.service;
 
 import org.demo.entity.Email;
-import org.demo.entity.EmailStatus;
+import org.demo.entity.enums.EmailStatus;
 import org.demo.entity.Recipient;
-import org.demo.entity.RecipientType;
+import org.demo.entity.enums.RecipientType;
 import org.demo.entity.dto.EmailRequestDto;
 import org.demo.repository.EmailRepository;
 import org.springframework.stereotype.Service;
@@ -26,28 +26,33 @@ public class EmailServiceImpl implements EmailService {
         Email email = new Email();
         email.setEmailFrom(emailRequest.getEmailFrom());
         email.setEmailBody(emailRequest.getEmailBody());
-        email.setState(EmailStatus.DRAFT);
+        email.setState(emailRequest.getState());
         email.setCreatedAt(LocalDateTime.now());
         email.setUpdatedAt(LocalDateTime.now());
 
         List<Recipient> recipients = new ArrayList<>();
 
-        for (String to : emailRequest.getRecipients().getTo()) {
+        for (EmailRequestDto.RecipientsDto recipientDto : emailRequest.getEmailTo()) {
             Recipient recipient = new Recipient();
-            recipient.setEmail(to);
+            recipient.setEmail(recipientDto.getEmail());
+            recipient.setEmailReference(email);
             recipient.setType(RecipientType.TO);
             recipients.add(recipient);
         }
 
-        for (String cc : emailRequest.getRecipients().getCc()) {
-            Recipient recipient = new Recipient();
-            recipient.setEmail(cc);
-            recipient.setType(RecipientType.CC);
-            recipients.add(recipient);
+        if (emailRequest.getEmailCC() != null) { // Optional
+            for (EmailRequestDto.RecipientsDto recipientDto : emailRequest.getEmailCC()) {
+                Recipient recipient = new Recipient();
+                recipient.setEmail(recipientDto.getEmail());
+                recipient.setEmailReference(email);
+                recipient.setType(RecipientType.CC);
+                recipients.add(recipient);
+            }
         }
-        email.setRecipients(recipients);
 
+        email.setRecipients(recipients);
         emailRepository.save(email);
+
         return email;
     }
 
