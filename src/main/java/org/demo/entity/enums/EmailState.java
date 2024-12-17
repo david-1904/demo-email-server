@@ -1,6 +1,6 @@
 package org.demo.entity.enums;
 
-public enum EmailStatus {
+public enum EmailState {
     DRAFT,
     SENT,
     DELETED,
