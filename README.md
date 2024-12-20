@@ -130,7 +130,7 @@ one by one.
 This runs a shell script located in the project root folder. 
 It automates the process of building, testing and deploying:
 
-- Build the Project
+- Build the ProjectK
 - Stop all containers
 - Rebuilds and starts the production containers (postgres, flyway, and email-server-app).
 - Run tests with specific test profile and datasource configuration. If the tests fail, all containers are shut down, and the script exits.
