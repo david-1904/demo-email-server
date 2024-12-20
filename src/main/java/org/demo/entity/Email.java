@@ -22,10 +22,11 @@ public class Email {
     private String subject;
 
     @Lob
+    @Column(columnDefinition = "TEXT")
     private String emailBody;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "email_status")
+    @Column(name = "state", nullable = false)
     private EmailState state;
 
     @Column(name = "created_at", updatable = false)
