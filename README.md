@@ -109,6 +109,7 @@ to use a version-controlled tool like Flyway which also supports rollbacks.
 - Java-Version: OpenJDK 17
 - Docker-Version: Docker 20.x with Docker Compose
 - Database: Latest PostgreSQL 17.x starts with Docker Compose (no installation required)
+- Internet connection required to fetch dependencies and resources by Docker
 
 # Installation and Running Instructions
 
@@ -117,8 +118,14 @@ to use a version-controlled tool like Flyway which also supports rollbacks.
     - For Linux:  Ensure your user is added to the docker group: ```sudo usermod -aG docker $USER```
 3. Clone the repository: ```git clone https://github.com/david-1904/demo-email-server.git```
 4. Open the project in an IDE (IntelliJ IDEA recommended)
+5. Ensure Docker Desktop is running
 
-Start the application by using the shell with: ```./start.sh```
+For Linux and Mac:
+Start the application by using the shell with: ```./start.sh``
+
+For Windows:
+Use Windows Subsystem for Linux (WSL) or use Git Bash for running .sh files. Or use the prompts in the start.sh file
+one by one.
 
 This runs a shell script located in the project root folder. 
 It automates the process of building, testing and deploying:
@@ -139,6 +146,8 @@ The Docker container of the application exposes port 5005 for runtime debugging.
 
 The following passage lists the different endpoints exposed by the application, all can be tested by a tool like
 Postman or Insomnia.
+
+All endpoints are running on: ```localhost:8080```.
 
 ## GET /emails
 
