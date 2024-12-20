@@ -1,4 +1,21 @@
 services:
+
+  email-server-app:
+    build:
+      context: .
+    container_name: email_server_app
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/email_server
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: secret
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+
   postgres:
     image: postgres:latest
     container_name: postgres_db
@@ -24,48 +41,6 @@ services:
     command: -url=jdbc:postgresql://postgres:5432/email_server -connectRetries=60 migrate -X
     depends_on:
       - postgres
-    networks:
-      - app_network
-
-  email-server-app:
-    build:
-      context: .
-    container_name: email_server_app
-    ports:
-      - "8080:8080"
-      - "5005:5005"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/email_server
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: secret
-    depends_on:
-      - postgres
-    networks:
-      - app_network
-
-  postgres_test:
-    image: postgres:latest
-    container_name: postgres_test_db
-    environment:
-      POSTGRES_DB: email_server_test
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-    ports:
-      - "5433:5432"
-    networks:
-      - app_network
-
-  flyway_test:
-    image: flyway/flyway
-    container_name: flyway_test
-    environment:
-      FLYWAY_USER: admin
-      FLYWAY_PASSWORD: secret
-    volumes:
-      - ./sql:/flyway/sql
-    command: -url=jdbc:postgresql://postgres_test:5432/email_server_test -connectRetries=60 migrate -X
-    depends_on:
-      - postgres_test
     networks:
       - app_network
 
