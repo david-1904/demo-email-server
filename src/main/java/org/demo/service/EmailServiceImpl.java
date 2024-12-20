@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final EmailRepository emailRepository;
 
-    public EmailServiceImpl(EmailRepository emailRepository, EntityManager entityManager) {
+    public EmailServiceImpl(EmailRepository emailRepository) {
         this.emailRepository = emailRepository;
     }
 
