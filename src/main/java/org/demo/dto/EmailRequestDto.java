@@ -3,7 +3,6 @@ package org.demo.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.demo.entity.enums.EmailState;
 
 import java.util.List;
 
