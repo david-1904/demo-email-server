@@ -1,8 +1,6 @@
 package org.demo.dto;
 
 import lombok.Data;
-import org.demo.entity.enums.EmailState;
-import org.demo.entity.enums.RecipientType;
 
 import java.time.LocalDateTime;
 import java.util.List;
