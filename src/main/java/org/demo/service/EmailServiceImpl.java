@@ -1,18 +1,21 @@
 package org.demo.service;
 
+import jakarta.persistence.EntityManager;
 import org.demo.controller.exception.ResourceNotFoundException;
+import org.demo.dto.EmailRequestDto;
 import org.demo.dto.EmailResponseDto;
 import org.demo.entity.Email;
 import org.demo.entity.Recipient;
 import org.demo.entity.enums.EmailState;
 import org.demo.entity.enums.RecipientType;
-import org.demo.dto.EmailRequestDto;
 import org.demo.repository.EmailRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,14 +23,13 @@ public class EmailServiceImpl implements EmailService {
 
     private final EmailRepository emailRepository;
 
-    public EmailServiceImpl(EmailRepository emailRepository) {
+    public EmailServiceImpl(EmailRepository emailRepository, EntityManager entityManager) {
         this.emailRepository = emailRepository;
     }
 
     @Override
     public Email saveEmail(EmailRequestDto emailRequest) {
         Email email = mapToEmailEntity(emailRequest);
-        email.setState(EmailState.DRAFT);
         emailRepository.save(email);
         return email;
     }
@@ -37,11 +39,10 @@ public class EmailServiceImpl implements EmailService {
         Email existingEmail = emailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Email with ID " + id + " not found"));
 
-        // Check if status is DRAFT
         if (!EmailState.DRAFT.equals(existingEmail.getState())) {
             throw new IllegalStateException("Only DRAFT emails can be updated");
         }
-
+        existingEmail.setSubject(updatedEmail.getSubject());
         existingEmail.setEmailBody(updatedEmail.getEmailBody());
         existingEmail.setUpdatedAt(LocalDateTime.now());
 
@@ -61,7 +62,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void markEmailAsSpam(String emailFrom) {
-
         Email existingEmail = emailRepository.findByEmailFrom(emailFrom)
                 .orElseThrow(() -> new ResourceNotFoundException("Email '" + emailFrom + "' not found"));
 
@@ -70,7 +70,6 @@ public class EmailServiceImpl implements EmailService {
         }
 
         existingEmail.setState(EmailState.SPAM);
-
     }
 
     @Override
@@ -94,21 +93,24 @@ public class EmailServiceImpl implements EmailService {
         email.setSubject(emailRequest.getSubject());
         email.setCreatedAt(LocalDateTime.now());
         email.setUpdatedAt(LocalDateTime.now());
+        email.setState(EmailState.DRAFT);
 
         List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), email, RecipientType.TO);
+        List<Recipient> recipients = new ArrayList<>(recipientsTo);
 
-        List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), email, RecipientType.CC);
+        if(!emailRequest.getEmailCC().isEmpty()) {
+            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), email, RecipientType.CC);
+            recipients.addAll(recipientsCC);
+        }
 
-        List<Recipient> allRecipients = new ArrayList<>();
-        allRecipients.addAll(recipientsTo);
-        allRecipients.addAll(recipientsCC);
+        email.setRecipients(recipients);
 
-        email.setRecipients(allRecipients);
         return email;
     }
 
     private List<Recipient> mapToRecipientEntity(List<EmailRequestDto.RecipientsDto> recipientsDtos,
                                                  Email email, RecipientType type) {
+
         return recipientsDtos.stream()
                 .map(recipientDto -> {
                     Recipient recipient = new Recipient();
@@ -141,6 +143,56 @@ public class EmailServiceImpl implements EmailService {
         responseDto.setRecipients(recipientDtos);
 
         return responseDto;
+    }
+
+    @Override
+    public List<EmailResponseDto> getAllEmails() {
+        return emailRepository.findAll().stream()
+                .map(this::mapToEmailResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EmailResponseDto getEmailById(Long id) {
+        Email email = emailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Email with ID " + id + " not found"));
+        return mapToEmailResponseDto(email);
+    }
+
+    @Transactional
+    @Override
+    public List<Long> saveAllEmails(List<EmailRequestDto> emailRequestDtos) {
+        if (emailRequestDtos == null || emailRequestDtos.isEmpty()) {
+            throw new IllegalArgumentException("Email list cannot be null or empty");
+        }
+        List<Email> emails = emailRequestDtos.stream()
+                .map(this::mapToEmailEntity)
+                .collect(Collectors.toList());
+
+        emailRepository.saveAll(emails);
+        return emails.stream().map(Email::getEmailId).toList();
+    }
+
+    @Transactional
+    @Override
+    public void deleteEmailsByIds(List<Long> ids) {
+        List<Email> emails = emailRepository.findAllById(ids);
+
+        Set<Long> foundIds = emails.stream()
+                .map(Email::getEmailId)
+                .collect(Collectors.toSet());
+
+        List<Long> missingIds = ids.stream()
+                .filter(id -> !foundIds.contains(id))
+                .toList();
+
+        if (!missingIds.isEmpty()) {
+            throw new ResourceNotFoundException("Emails with IDs " + missingIds + " not found");
+        }
+
+        emails.forEach(email -> email.setState(EmailState.DELETED));
+
+        emailRepository.saveAll(emails);
     }
 
 }

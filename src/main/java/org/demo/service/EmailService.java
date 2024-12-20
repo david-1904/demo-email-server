@@ -1,8 +1,10 @@
 package org.demo.service;
 
+import org.demo.dto.EmailRequestDto;
 import org.demo.dto.EmailResponseDto;
 import org.demo.entity.Email;
-import org.demo.dto.EmailRequestDto;
+
+import java.util.List;
 
 public interface EmailService {
 
@@ -12,4 +14,8 @@ public interface EmailService {
     void markEmailAsSpam(String email);
     void sendEmail(Long id);
     EmailResponseDto mapToEmailResponseDto(Email email);
+    List<EmailResponseDto> getAllEmails();
+    EmailResponseDto getEmailById(Long id);
+    List<Long> saveAllEmails(List<EmailRequestDto> emailRequestDtos);
+    void deleteEmailsByIds(List<Long> ids);
 }
