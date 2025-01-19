@@ -89,35 +89,36 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private Email mapToEmailEntity(EmailRequestDto emailRequest) {
-        List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), null, RecipientType.TO);
-
-        List<Recipient> recipients = new ArrayList<>(recipientsTo);
-
-        if (!emailRequest.getEmailCC().isEmpty()) {
-            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), null, RecipientType.CC);
-            recipients.addAll(recipientsCC);
-        }
-
-        return Email.builder()
+        Email email = Email.builder()
                 .emailFrom(emailRequest.getEmailFrom())
                 .emailBody(emailRequest.getEmailBody())
                 .subject(emailRequest.getSubject())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .state(EmailState.DRAFT)
-                .recipients(recipients)
                 .build();
+
+        List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), email, RecipientType.TO);
+        List<Recipient> recipients = new ArrayList<>(recipientsTo);
+
+        if (!emailRequest.getEmailCC().isEmpty()) {
+            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), email, RecipientType.CC);
+            recipients.addAll(recipientsCC);
+        }
+
+        email.setRecipients(recipients);
+
+        return email;
     }
 
     private List<Recipient> mapToRecipientEntity(List<EmailRequestDto.RecipientsDto> recipientsDtos,
                                                  Email email, RecipientType type) {
-
         return recipientsDtos.stream()
                 .map(recipientDto -> {
                     Recipient recipient = new Recipient();
                     recipient.setEmail(recipientDto.getEmail());
                     recipient.setType(type);
-                    recipient.setEmailReference(email);
+                    recipient.setEmailReference(email); // Setze die Referenz zur Email-Entität
                     return recipient;
                 })
                 .collect(Collectors.toList());
