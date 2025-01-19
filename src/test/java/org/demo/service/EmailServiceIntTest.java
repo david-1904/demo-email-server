@@ -2,8 +2,6 @@ package org.demo.service;
 
 import jakarta.persistence.EntityManager;
 import org.demo.dto.EmailRequestDto;
-import org.demo.entity.Email;
-import org.demo.entity.enums.EmailState;
 import org.demo.repository.EmailRepository;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
@@ -17,12 +15,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest
