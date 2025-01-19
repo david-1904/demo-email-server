@@ -17,4 +17,4 @@ mvn test || { echo "Tests failed! Cleaning up..."; docker compose down; exit 1; 
 # Jacoco Report
 mvn jacoco:report
 
-echo "Production environment is still running."
+echo "Production environment is running."
