@@ -61,14 +61,17 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void markEmailAsSpam(String emailFrom) {
-        Email existingEmail = emailRepository.findByEmailFrom(emailFrom)
-                .orElseThrow(() -> new ResourceNotFoundException("Email '" + emailFrom + "' not found"));
+        List<Email> emails = emailRepository.findAllByEmailFrom(emailFrom);
 
-        if(EmailState.SPAM.equals(existingEmail.getState())) {
-            throw new IllegalStateException("Already marked as spam email");
+        if (emails.isEmpty()) {
+            throw new ResourceNotFoundException("No emails found from sender: " + emailFrom);
         }
 
-        existingEmail.setState(EmailState.SPAM);
+        emails.stream()
+                .filter(email -> !EmailState.SPAM.equals(email.getState()))
+                .forEach(email -> email.setState(EmailState.SPAM));
+
+        emailRepository.saveAll(emails);
     }
 
     @Override
@@ -86,25 +89,24 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private Email mapToEmailEntity(EmailRequestDto emailRequest) {
-        Email email = new Email();
-        email.setEmailFrom(emailRequest.getEmailFrom());
-        email.setEmailBody(emailRequest.getEmailBody());
-        email.setSubject(emailRequest.getSubject());
-        email.setCreatedAt(LocalDateTime.now());
-        email.setUpdatedAt(LocalDateTime.now());
-        email.setState(EmailState.DRAFT);
+        List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), null, RecipientType.TO);
 
-        List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), email, RecipientType.TO);
         List<Recipient> recipients = new ArrayList<>(recipientsTo);
 
-        if(!emailRequest.getEmailCC().isEmpty()) {
-            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), email, RecipientType.CC);
+        if (!emailRequest.getEmailCC().isEmpty()) {
+            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), null, RecipientType.CC);
             recipients.addAll(recipientsCC);
         }
 
-        email.setRecipients(recipients);
-
-        return email;
+        return Email.builder()
+                .emailFrom(emailRequest.getEmailFrom())
+                .emailBody(emailRequest.getEmailBody())
+                .subject(emailRequest.getSubject())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .state(EmailState.DRAFT)
+                .recipients(recipients)
+                .build();
     }
 
     private List<Recipient> mapToRecipientEntity(List<EmailRequestDto.RecipientsDto> recipientsDtos,
