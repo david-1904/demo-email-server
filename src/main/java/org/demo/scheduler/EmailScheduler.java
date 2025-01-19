@@ -13,6 +13,10 @@ public class EmailScheduler {
         this.emailService = emailService;
     }
 
+    /**
+     * Marks specific emails as spam.
+     * Scheduled to run daily at 10:00 AM.
+     */
     @Scheduled(cron = "0 0 10 * * ?")
     public void markEmailsAsSpam() {
         emailService.markEmailAsSpam("carl@my.com");

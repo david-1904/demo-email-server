@@ -5,6 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * A global exception handler that handles exceptions across the entire application.
+ * This class ensures consistent error responses for various types of exceptions.
+ * It is annotated with {@link ControllerAdvice}, allowing it to apply globally to all controllers.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
