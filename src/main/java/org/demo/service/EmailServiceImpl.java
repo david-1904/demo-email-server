@@ -123,26 +123,23 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public EmailResponseDto mapToEmailResponseDto(Email email) {
-        EmailResponseDto responseDto = new EmailResponseDto();
-        responseDto.setEmailId(email.getEmailId());
-        responseDto.setEmailFrom(email.getEmailFrom());
-        responseDto.setSubject(email.getSubject());
-        responseDto.setEmailBody(email.getEmailBody());
-        responseDto.setState(email.getState().name());
-        responseDto.setUpdatedAt(email.getUpdatedAt());
-        responseDto.setCreatedAt(email.getCreatedAt());
-
         List<EmailResponseDto.RecipientDto> recipientDtos = email.getRecipients().stream()
-                .map(recipient -> {
-                    EmailResponseDto.RecipientDto recipientDto = new EmailResponseDto.RecipientDto();
-                    recipientDto.setEmail(recipient.getEmail());
-                    recipientDto.setType(recipient.getType().name());
-                    return recipientDto;
-                })
+                .map(recipient -> EmailResponseDto.RecipientDto.builder()
+                        .email(recipient.getEmail())
+                        .type(recipient.getType().name())
+                        .build())
                 .collect(Collectors.toList());
-        responseDto.setRecipients(recipientDtos);
 
-        return responseDto;
+        return EmailResponseDto.builder()
+                .emailId(email.getEmailId())
+                .emailFrom(email.getEmailFrom())
+                .subject(email.getSubject())
+                .emailBody(email.getEmailBody())
+                .state(email.getState().name())
+                .createdAt(email.getCreatedAt())
+                .updatedAt(email.getUpdatedAt())
+                .recipients(recipientDtos)
+                .build();
     }
 
     @Override
