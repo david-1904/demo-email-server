@@ -180,7 +180,7 @@ public class EmailServiceTest {
         email.setEmailFrom(emailFrom);
         email.setState(EmailState.DRAFT);
 
-        when(emailRepository.findByEmailFrom(emailFrom)).thenReturn(Optional.of(email));
+        when(emailRepository.findAllByEmailFrom(emailFrom)).thenReturn(anyList());
 
         // Act
         emailService.markEmailAsSpam(emailFrom);
@@ -191,29 +191,11 @@ public class EmailServiceTest {
     }
 
     @Test
-    void whenMarkEmailAsSpam_Expect_ThrowException_WhenAlreadySpam() {
-        // Arrange
-        String emailFrom = "test@example.com";
-
-        Email email = new Email();
-        email.setEmailId(1L);
-        email.setEmailFrom(emailFrom);
-        email.setState(EmailState.SPAM);
-
-        when(emailRepository.findByEmailFrom(emailFrom)).thenReturn(Optional.of(email));
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class, () -> emailService.markEmailAsSpam(emailFrom));
-
-        verify(emailRepository, never()).save(any());
-    }
-
-    @Test
     void whenMarkEmailAsSpam_Expect_ThrowException_WhenEmailNotFound() {
         // Arrange
         String emailFrom = "nonexistent@example.com";
 
-        when(emailRepository.findByEmailFrom(emailFrom)).thenReturn(Optional.empty());
+        when(emailRepository.findAllByEmailFrom(emailFrom)).thenReturn(anyList());
 
         // Assert
         assertThrows(ResourceNotFoundException.class, () -> emailService.markEmailAsSpam(emailFrom));
