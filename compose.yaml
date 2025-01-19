@@ -8,7 +8,7 @@ services:
       - "8080:8080"
       - "5005:5005"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/email_server
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/email_server
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: secret
     depends_on:
@@ -24,7 +24,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -38,7 +38,7 @@ services:
       FLYWAY_PASSWORD: secret
     volumes:
       - ./sql:/flyway/sql
-    command: -url=jdbc:postgresql://postgres:5432/email_server -connectRetries=60 migrate -X
+    command: -url=jdbc:postgresql://postgres:5433/email_server -connectRetries=60 migrate -X
     depends_on:
       - postgres
     networks:
