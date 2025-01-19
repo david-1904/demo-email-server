@@ -1,6 +1,5 @@
 package org.demo.service;
 
-import jakarta.persistence.EntityManager;
 import org.demo.controller.exception.ResourceNotFoundException;
 import org.demo.dto.EmailRequestDto;
 import org.demo.dto.EmailResponseDto;
