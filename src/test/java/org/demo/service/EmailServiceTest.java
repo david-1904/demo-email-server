@@ -180,7 +180,9 @@ public class EmailServiceTest {
         email.setEmailFrom(emailFrom);
         email.setState(EmailState.DRAFT);
 
-        when(emailRepository.findAllByEmailFrom(emailFrom)).thenReturn(anyList());
+        List<Email> emails = List.of(email);
+
+        when(emailRepository.findAllByEmailFrom(emailFrom)).thenReturn(emails);
 
         // Act
         emailService.markEmailAsSpam(emailFrom);
