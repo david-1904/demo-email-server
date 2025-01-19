@@ -18,7 +18,8 @@ import java.util.List;
 public class Email {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "email_seq")
+    @SequenceGenerator(name = "email_seq", sequenceName = "email_seq", allocationSize = 5)
     private Long emailId;
 
     @Column(name = "email_from", nullable = false)
@@ -41,8 +42,8 @@ public class Email {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "email_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "email_id", nullable = false)
     private List<Recipient> recipients;
 
 }

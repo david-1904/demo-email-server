@@ -98,11 +98,12 @@ public class EmailServiceImpl implements EmailService {
                 .state(EmailState.DRAFT)
                 .build();
 
-        List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), email, RecipientType.TO);
+        // Map recipients
+        List<Recipient> recipientsTo = mapToRecipientEntity(emailRequest.getEmailTo(), RecipientType.TO);
         List<Recipient> recipients = new ArrayList<>(recipientsTo);
 
-        if (!emailRequest.getEmailCC().isEmpty()) {
-            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), email, RecipientType.CC);
+        if (emailRequest.getEmailCC() != null && !emailRequest.getEmailCC().isEmpty()) {
+            List<Recipient> recipientsCC = mapToRecipientEntity(emailRequest.getEmailCC(), RecipientType.CC);
             recipients.addAll(recipientsCC);
         }
 
@@ -111,14 +112,12 @@ public class EmailServiceImpl implements EmailService {
         return email;
     }
 
-    private List<Recipient> mapToRecipientEntity(List<EmailRequestDto.RecipientsDto> recipientsDtos,
-                                                 Email email, RecipientType type) {
+    private List<Recipient> mapToRecipientEntity(List<EmailRequestDto.RecipientsDto> recipientsDtos, RecipientType type) {
         return recipientsDtos.stream()
                 .map(recipientDto -> {
                     Recipient recipient = new Recipient();
                     recipient.setEmail(recipientDto.getEmail());
                     recipient.setType(type);
-                    recipient.setEmailReference(email); // Setze die Referenz zur Email-Entität
                     return recipient;
                 })
                 .collect(Collectors.toList());

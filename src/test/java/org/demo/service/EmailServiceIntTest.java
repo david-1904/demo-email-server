@@ -1,7 +1,12 @@
 package org.demo.service;
 
+import jakarta.persistence.EntityManager;
 import org.demo.dto.EmailRequestDto;
+import org.demo.entity.Email;
+import org.demo.entity.enums.EmailState;
 import org.demo.repository.EmailRepository;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +17,12 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -22,6 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EmailServiceIntTest {
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private EmailRepository emailRepository;
@@ -79,4 +90,35 @@ public class EmailServiceIntTest {
         assertEquals(2L, savedEmails.get(1).longValue());
     }
 
+    @Test
+    void whenBatchSizeIsFive_ExpectSixBatchesForTenEntities() {
+        // Arrange
+        List<EmailRequestDto> emailRequestDtos = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            EmailRequestDto emailRequest = new EmailRequestDto();
+            emailRequest.setEmailFrom("sender" + i + "@example.com");
+            emailRequest.setSubject("Subject " + i);
+            emailRequest.setEmailBody("Body " + i);
+
+            EmailRequestDto.RecipientsDto recipientTo = new EmailRequestDto.RecipientsDto();
+            recipientTo.setEmail("recipient" + i + "@example.com");
+            emailRequest.setEmailTo(List.of(recipientTo));
+            emailRequestDtos.add(emailRequest);
+        }
+
+        // Enable Hibernate statistics
+        SessionFactory sessionFactory = entityManager.getEntityManagerFactory().unwrap(SessionFactory.class);
+        Statistics statistics = sessionFactory.getStatistics();
+        statistics.setStatisticsEnabled(true);
+
+        // Act
+        emailService.saveAllEmails(emailRequestDtos);
+
+        // Assert
+        long statementCount = statistics.getPrepareStatementCount();
+        System.out.println("Prepared Statement Count: " + statementCount);
+
+        // Expect 6 Batches: 2x insert email, 2x insert recipient, 2x update recipient (email_id reference)
+        assertEquals(6, statementCount, "Batching is not working as expected");
+    }
 }
