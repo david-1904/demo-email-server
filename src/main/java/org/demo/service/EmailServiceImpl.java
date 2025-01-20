@@ -42,6 +42,7 @@ public class EmailServiceImpl implements EmailService {
             throw new IllegalStateException("Only DRAFT emails can be updated");
         }
         existingEmail.setSubject(updatedEmail.getSubject());
+        existingEmail.setRecipients(updatedEmail.getRecipients());
         existingEmail.setEmailBody(updatedEmail.getEmailBody());
         existingEmail.setUpdatedAt(LocalDateTime.now());
 
