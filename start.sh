@@ -1,28 +1,14 @@
 #!/bin/bash
 
-echo "Stopping and removing all running containers..."
-# Get IDs of all running Docker containers
-running_containers=$(docker ps -q)
+echo "Stopping and removing all Docker containers and volumes..."
 
-# Check if there are any running containers
-if [ -n "$running_containers" ]; then
-  # Stop all running containers using their IDs
-  docker stop $running_containers
-fi
+# Stop and remove all containers
+docker rm -f $(docker ps -aq) 2>/dev/null
 
-# Get IDs of all existing Docker containers (both running and stopped)
-all_containers=$(docker ps -aq)
+# Remove all volumes
+docker volume prune -f
 
-# Check if there are any containers (running or stopped)
-if [ -n "$all_containers" ]; then
-  # Remove all containers using their IDs
-  docker rm $all_containers
-fi
-
-# Remove all unused Docker networks
-if ! docker network prune -f; then
-  echo "Failed to prune Docker networks. Either there are no unused networks or Docker is not running."
-fi
+echo "All containers and volumes have been removed."
 
 # Build the project
 mvn clean package -DskipTests || { echo "Build failed! Exiting."; exit 1; }
