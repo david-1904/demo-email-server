@@ -42,7 +42,7 @@ public class Email {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "email_id", nullable = false)
     private List<Recipient> recipients;
 
