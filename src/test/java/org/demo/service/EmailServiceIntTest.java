@@ -82,8 +82,9 @@ public class EmailServiceIntTest {
 
         // Assert
         assertEquals(2, savedEmails.size());
-        assertEquals(1L, savedEmails.get(0).longValue());
-        assertEquals(2L, savedEmails.get(1).longValue());
+        for (Long savedEmail : savedEmails) {
+            assertEquals(savedEmail, emailService.getEmailById(savedEmail).getEmailId());
+        }
     }
 
     @Test
