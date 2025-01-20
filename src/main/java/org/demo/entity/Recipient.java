@@ -10,7 +10,7 @@ public class Recipient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "recipient_seq")
-    @SequenceGenerator(name = "recipient_seq", sequenceName = "recipient_seq", allocationSize = 5)
+    @SequenceGenerator(name = "recipient_seq", sequenceName = "recipient_id_seq", allocationSize = 5)
     private Long id;
 
     @Column(nullable = false)
