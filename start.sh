@@ -5,9 +5,6 @@ echo "Stopping and removing all Docker containers and volumes..."
 # Stop and remove all containers
 docker rm -f $(docker ps -aq) 2>/dev/null
 
-# Remove all volumes
-docker volume prune -f
-
 echo "All containers and volumes have been removed."
 
 # Build the project
