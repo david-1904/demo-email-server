@@ -19,7 +19,7 @@ public class Email {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "email_seq")
-    @SequenceGenerator(name = "email_seq", sequenceName = "email_seq", allocationSize = 5)
+    @SequenceGenerator(name = "email_seq", sequenceName = "email_email_id_seq", allocationSize = 5)
     private Long emailId;
 
     @Column(name = "email_from", nullable = false)
